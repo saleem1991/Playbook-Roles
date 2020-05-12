@@ -1,6 +1,6 @@
 ---
 - name: use httpd role playbook
-  hosts: all
+  hosts: web
   user: ansible
   become: true
   roles:
