@@ -93,11 +93,9 @@ service auth {
   }
 
   # Postfix smtp-auth
-  unix_listener /var/spool/postfix/private/auth {
-    mode = 0666
-    user = postfix
-    group = postfix
-  }
+  #unix_listener /var/spool/postfix/private/auth {
+  #  mode = 0666
+  #}
 
   # Auth process is run as this user.
   #user = $default_internal_user
@@ -114,8 +112,9 @@ service dict {
   # If dict proxy is used, mail processes should have access to its socket.
   # For example: mode=0660, group=vmail and global mail_access_groups=vmail
   unix_listener dict {
-    mode = 0600
-      user = postfix
-      group = postfix
+    #mode = 0600
+    #user =
+    #group =
   }
 }
+

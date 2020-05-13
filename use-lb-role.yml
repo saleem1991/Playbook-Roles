@@ -1,6 +1,6 @@
 ---
 - name: use lb role playbook
-  hosts: lb6
+  hosts: lb7
   user: ansible
   become: true
   roles:

@@ -161,10 +161,10 @@ inet_protocols = all
 #
 # See also below, section "REJECTING MAIL FOR UNKNOWN LOCAL USERS".
 #
-#mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+#mydestination = $myhostname, localhost.$mydomain, localhost
 mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
 #mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain,
-#	mail.$mydomain, www.$mydomain, ftp.$mydomain
+#       mail.$mydomain, www.$mydomain, ftp.$mydomain
 
 # REJECTING MAIL FOR UNKNOWN LOCAL USERS
 #
@@ -261,7 +261,7 @@ unknown_local_recipient_reject_code = 550
 # of listing the patterns here. Specify type:table for table-based lookups
 # (the value on the table right-hand side is not used).
 #
-mynetworks = 192.168.35.10/24, 127.0.0.0/8
+mynetworks = 192.168.35.0/24, 127.0.0.0/8
 #mynetworks = $config_directory/mynetworks
 #mynetworks = hash:/etc/postfix/network_table
 
@@ -614,17 +614,17 @@ debug_peer_level = 2
 # set up your XAUTHORITY environment variable before starting Postfix.
 #
 debugger_command =
-	 PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
-	 ddd $daemon_directory/$process_name $process_id & sleep 5
+         PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+         ddd $daemon_directory/$process_name $process_id & sleep 5
 
 # If you can't use X, use this to capture the call stack when a
 # daemon crashes. The result is in a file in the configuration
 # directory, and is named after the process name and the process ID.
 #
 # debugger_command =
-#	PATH=/bin:/usr/bin:/usr/local/bin; export PATH; (echo cont;
-#	echo where) | gdb $daemon_directory/$process_name $process_id 2>&1
-#	>$config_directory/$process_name.$process_id.log & sleep 5
+#       PATH=/bin:/usr/bin:/usr/local/bin; export PATH; (echo cont;
+#       echo where) | gdb $daemon_directory/$process_name $process_id 2>&1
+#       >$config_directory/$process_name.$process_id.log & sleep 5
 #
 # Another possibility is to run gdb under a detached screen session.
 # To attach to the screen sesssion, su root and run "screen -r
@@ -632,9 +632,9 @@ debugger_command =
 # sessions (from "screen -list").
 #
 # debugger_command =
-#	PATH=/bin:/usr/bin:/sbin:/usr/sbin; export PATH; screen
-#	-dmS $process_name gdb $daemon_directory/$process_name
-#	$process_id & sleep 1
+#       PATH=/bin:/usr/bin:/sbin:/usr/sbin; export PATH; screen
+#       -dmS $process_name gdb $daemon_directory/$process_name
+#       $process_id & sleep 1
 
 # INSTALL-TIME CONFIGURATION INFORMATION
 #
@@ -677,3 +677,4 @@ sample_directory = /usr/share/doc/postfix-2.10.1/samples
 # readme_directory: The location of the Postfix README files.
 #
 readme_directory = /usr/share/doc/postfix-2.10.1/README_FILES
+
