@@ -1,0 +1,8 @@
+---
+- hosts: db6
+  roles:
+    - apache-server
+    - mariadb-server
+    - php-stack
+    - phpMyAdmin
+  become: true
