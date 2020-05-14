@@ -1,0 +1,31 @@
+---
+- name: install initial packages on all boxes
+  hosts: nfs-all
+  remote_user: ansible
+  become: yes
+  tasks:
+    - name: Ensure NFS common is installed.
+      yum:
+        name: nfs-utils*
+        state: present
+    - name: Ensure nfs is started and enabled
+      service:
+        name: nfs
+        state: started
+        enabled: true
+    - name: create mountable dir
+      file: path=/clientshare state=directory mode=777 owner=root group=root
+    - name: set mountpoint
+      shell:
+          cmd: mount -t nfs 192.168.35.17:/share /clientshare
+          cmd: echo "192.168.35.17:/share /clientshare nfs defaults 0 0" >> /etc/fstab
+#      mount:
+#        path: /clientshare
+#        src: 192.168.35.17:/share
+#        fstype: nfs
+#        opts: default
+#        dump: 0
+#        passno: 2
+#        state: mounted
+#
+#
