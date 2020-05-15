@@ -35,46 +35,44 @@
 
   - name: dowwnload nagios
     shell: wget -O nagioscore.tar.gz https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.5.tar.gz
-    args:
-      chdir: /tmp
 
   - name: extract the nagios archive
-    shell: tar xvf nagios-*.tar.gz
+    shell: tar xvf nagios*.tar.gz
 
   - name: change into the dir and execute this command
     command: ./configure --with-command-group=nagcmd
     args:
-      chdir: /home/ansible/nagiosscore-nagios-4.4.5
+      chdir: /home/ansible/nagioscore-nagios-4.4.5
 
   - name: run the make all command
     shell: make all
     args:
-      chdir: /home/ansible/nagiosscore-nagios-4.4.5
+      chdir: /home/ansible/nagioscore-nagios-4.4.5
 
   - name: run make install
     shell: make install
     args:
-      chdir: /home/ansible/nagiosscore-nagios-4.4.5
+      chdir: /home/ansible/nagioscore-nagios-4.4.5
 
   - name: run make install commandmode
     shell: make install-commandmode
     args:
-      chdir: /home/ansible/nagiosscore-nagios-4.4.5
+      chdir: /home/ansible/nagioscore-nagios-4.4.5
 
   - name: run make install-init
     shell: make install-init
     args:
-      chdir: /home/ansible/nagiosscore-nagios-4.4.5
+      chdir: /home/ansible/nagioscore-nagios-4.4.5
 
   - name: run make install-config
     shell: make install-config
     args:
-      chdir: /home/ansible/nagiosscore-nagios-4.4.5
+      chdir: /home/ansible/nagioscore-nagios-4.4.5
 
   - name: run install-webconf
     shell: make install-webconf
     args:
-      chdir: /home/ansible/nagiosscore-nagios-4.4.5
+      chdir: /home/ansible/nagioscore-nagios-4.4.5
 
   - name: download nagios-plugin
     shell: wget http://nagios-plugins.org/download/nagios-plugins-2.3.2.tar.gz
