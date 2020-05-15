@@ -1,0 +1,47 @@
+#!/bin/bash
+
+####################### Dir Create
+if [ -f .ssh/id_rsa* ]
+then
+  echo "seems like you already have a private key"
+elif [ "mkdir ~/.ssh" ]
+then
+  echo ".ssh Directory created"
+else
+  echo "Ooops there is a problem creating"
+fi
+
+######################## KEYGEN
+ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+
+######################## EXCHANGE
+sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+ssh-copy-id $1
+ssh-copy-id ansible@192.168.35.11
+ssh-copy-id ansible@192.168.35.12
+ssh-copy-id ansible@192.168.35.13
+ssh-copy-id ansible@192.168.35.14
+ssh-copy-id ansible@192.168.35.15
+ssh-copy-id ansible@192.168.35.16
+ssh-copy-id ansible@192.168.35.17
+ssh-copy-id ansible@192.168.35.18
+ssh-copy-id ansible@192.168.35.19
+ssh-copy-id ansible@192.168.35.20
+ssh-copy-id ansible@192.168.35.21
+ssh-copy-id ansible@192.168.35.22
+ssh-copy-id ansible@192.168.35.23
+ssh-copy-id ansible@192.168.35.24
+ssh-copy-id ansible@192.168.35.25
+ssh-copy-id ansible@192.168.35.26
+ssh-copy-id ansible@192.168.35.27
+ssh-copy-id ansible@192.168.35.28
+ssh-copy-id ansible@192.168.35.29
+ssh-copy-id ansible@192.168.35.30
+ssh-copy-id ansible@192.168.35.31
+ssh-copy-id ansible@192.168.35.33
+ssh-copy-id ansible@192.168.35.34
+ssh-copy-id ansible@192.168.35.35
+ssh-copy-id ansible@192.168.35.36
+ssh-copy-id ansible@192.168.35.37
+ssh-copy-id ansible@192.168.35.38
+ssh-copy-id ansible@192.168.35.39

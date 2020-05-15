@@ -1,0 +1,6 @@
+---
+- name: use geerlingguy role
+  hosts: samba
+  become: true
+  roles:
+    - geerlingguy.samba

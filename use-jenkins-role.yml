@@ -1,0 +1,16 @@
+---
+- name: use jenkins role playbook
+  hosts: jenkins 
+  user: ansible
+  become: true
+
+  pre_tasks:
+    - debug:
+        msg: 'Beginning web server configuration.'
+
+  roles:
+    - jenkins
+
+  post_tasks:
+    - debug:
+        msg: 'Web server has been configured.'

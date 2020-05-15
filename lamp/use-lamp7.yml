@@ -1,0 +1,9 @@
+---
+- hosts: db7
+  roles:
+    - apache-server
+    - php-stack
+    - mariadb-server
+    - phpMyAdmin
+  become: true
+
