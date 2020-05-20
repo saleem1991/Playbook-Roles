@@ -1,0 +1,85 @@
+# This is the default ansible 'hosts' file.
+
+[prdx-web1]
+192.168.35.23
+192.168.35.25
+192.168.35.27
+
+[prdx-web2]
+192.168.35.22
+192.168.35.24
+192.168.35.26
+
+[db7]
+192.168.35.21 ansible_user=ansible
+
+[db6]
+192.168.35.20 ansible_user=ansible
+
+[ntp]
+192.168.35.11 ansible_user=ansible
+192.168.35.12 ansible_user=ansible
+
+[dnsm]
+192.168.35.13 ansible_user=ansible
+
+[dnss]
+192.168.35.14 ansible_user=ansible
+192.168.35.15 ansible_user=ansible
+
+[mail]
+192.168.35.19 ansible_user=ansible
+
+[ftp]
+192.168.35.16 ansible_user=ansible
+
+[db]
+192.168.35.20 ansible_user=ansible
+192.168.35.21 ansible_user=ansible
+
+[web]
+192.168.35.22 ansible_user=ansible
+192.168.35.23 ansible_user=ansible
+192.168.35.24 ansible_user=ansible
+192.168.35.25 ansible_user=ansible
+192.168.35.26 ansible_user=ansible
+192.168.35.27 ansible_user=ansible
+
+[lb7]
+192.168.35.29 ansible_user=ansible
+
+[lb6]
+192.168.35.28 ansible_user=ansible
+
+[nagios]
+192.168.35.30 ansible_user=ansible
+
+[samba]
+192.168.35.18 ansible_user=ansible
+
+[nfs]
+192.168.35.17 ansible_user=ansible
+
+[ldap]
+192.168.35.31 ansible_user=ansible
+
+[dockm]
+192.168.35.33 ansible_user=ansible
+
+[dockw]
+192.168.35.34 ansible_user=ansible
+192.168.35.35 ansible_user=ansible
+
+[kubem]
+192.168.35.37 ansible_user=ansible
+
+[kubew]
+192.168.35.38 ansible_user=ansible
+192.168.35.39 ansible_user=ansible
+
+[jenkins]
+192.168.35.36 ansible_user=ansible
+
+[ansible]
+192.168.35.32 ansible_user=ansible
+

@@ -1,0 +1,7 @@
+---
+- name: use httpd role playbook
+  hosts: prdx-web1
+  user: ansible
+  become: true
+  roles:
+    - { role: siaoming.httpd_server }

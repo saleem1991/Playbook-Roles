@@ -1,0 +1,7 @@
+---
+- name: use lb role playbook
+  hosts: lb7
+  user: ansible
+  become: true
+  roles:
+    - geerlingguy.haproxy

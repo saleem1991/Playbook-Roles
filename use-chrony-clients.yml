@@ -1,0 +1,9 @@
+---
+- name: use unxnn.chrony role
+  hosts: chrony-clients
+  user: ansible
+  become: true
+
+  roles:
+    - unxnn.chrony
+
