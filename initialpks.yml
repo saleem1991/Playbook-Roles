@@ -7,5 +7,5 @@
   tasks:
   - name: install all initial packages
     yum:
-      name: ['man', 'epel-release', 'man-pages', 'mlocate','chrony', 'vim', 'sysstat', 'bind-utils']
+      name: ['man', 'nfs-utils', 'epel-release', 'man-pages', 'mlocate','chrony', 'vim', 'sysstat', 'bind-utils']
       state: latest
