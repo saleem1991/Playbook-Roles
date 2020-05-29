@@ -1,0 +1,73 @@
+---
+- name: Kubernetes master
+  hosts: kubem
+  remote_user: ansible
+  tasks:
+
+   - name: Pulling images required for setting up a Kubernetes cluster
+     become: yes
+     shell: kubeadm config images pull
+
+   - name: Resetting kubeadm
+     become: yes
+     shell: kubeadm reset -f
+     register: output
+
+   - name: initialize K8S cluster
+     become: yes
+     shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.35.37 >> token
+
+   - name: Storing Logs and Generated token for future purpose.
+     become: yes
+     fetch:
+       src: /home/ansible/token 
+       dest: /home/ansible/
+       flat: yes
+
+
+   - name: Create /.kube directory
+     become: yes
+     file: 
+       path: /home/ansible/.kube
+       state: directory
+       mode: 0755
+       owner: ansible
+       group: ansible
+
+
+   - name: Kube config file
+     become: yes
+     copy:
+       dest: /home/ansible/.kube/config
+       src: /etc/kubernetes/admin.conf
+       owner: ansible
+       group: ansible
+       remote_src: yes
+
+
+
+
+   - name: install Pod network
+     shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+
+
+- name: Nodes
+  hosts: kubew
+  become: yes
+  remote_user: ansible
+  tasks:
+    
+   - name: Copying token to worker nodes
+     copy: 
+       src=/home/ansible/token
+       dest=/home/ansible/token.txt
+
+
+   - name: Joining worker nodes with kubernetes master
+     shell: |
+      kubeadm reset -f
+      cat /home/ansible/token.txt | tail -2 > out.sh
+      chmod +x out.sh
+      ./out.sh
+

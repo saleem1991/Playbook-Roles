@@ -1,0 +1,98 @@
+---
+- hosts: kubemw
+  remote_user: ansible
+  become: yes
+  tasks:
+   - copy:
+       dest: /etc/sysctl.d/master.conf
+       content: "net.bridge.bridge-nf-call-iptables = 1"
+
+   - name: Disable swap
+     command: swapoff -a
+
+   - name: Disable SWAP in fstab
+     lineinfile:
+       path: /etc/fstab
+       regexp: 'swap'
+       state: absent
+
+   - name: set selinux to permissive
+     command: setenforce 0
+
+
+   - name: add Kubernetes YUM repository
+     yum_repository:
+       name: Kubernetes
+       description: Kubernetes YUM repository
+       baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+       gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+       gpgcheck: yes
+
+
+   - name: Remove old Kubernetes version
+     yum:
+       name:
+         - kubeadm
+         - kubelet
+         - kubrctl
+       state: removed
+
+   - name: Remove old Docker version
+     yum:
+       name: docker
+       state: removed
+
+   - name: add Docker YUM repository
+     yum_repository:
+      name: Docker
+      description: Docker YUM repository
+      baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+      gpgkey: https://download.docker.com/linux/centos/gpg
+
+
+   - name: sysctl --system
+     shell:
+       cmd: "sysctl --system"
+
+
+   - name: install Docker
+     yum:
+       name: docker-ce
+       state: latest
+       update_cache: true
+
+
+   - name: install kubeadm
+     yum:
+        name: kubeadm
+        state: present
+
+
+   - name: install kubelet
+     yum:
+        name: kubelet
+        state: latest
+        update_cache: true
+
+   - name: install kubectl
+     yum:
+        name: kubectl
+        state: present
+        allow_downgrade: yes
+
+   - name: start Docker
+     service:
+       name: docker
+       state: started
+       enabled: true
+
+
+   - name: start kubelet
+     service:
+       name: kubelet
+       enabled: yes
+       state: started
+
+   - name: sysctl --system
+     shell:
+       cmd: "sysctl --system"

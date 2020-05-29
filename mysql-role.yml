@@ -1,8 +1,0 @@
----
-- name: Install Mysql using role
-  hosts: db
-  become: yes
-  vars_files:
-    - vars/main.yml
-  roles:
-    - { role: geerlingguy.mysql }
