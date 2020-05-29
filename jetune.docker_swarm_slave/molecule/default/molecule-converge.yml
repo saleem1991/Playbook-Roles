@@ -1,0 +1,33 @@
+---
+- name: Converge
+  hosts: "swarm_join"
+  vars_files:
+   - "test-vars-ce-swarm-cluster-join-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+
+  tasks:
+
+   - name: "(Converge) - Read join token file from shared volume"
+     shell:
+      cmd: "cat /tmp/join_token"
+     register: join_token
+
+   - name: "(Converge) - Read advertise ip file from shared volume"
+     shell:
+      cmd: "cat /tmp/advertise_ip"
+     register: advertise_ip
+
+   - name: "(Converge) - Print Worker join token"
+     debug:
+      msg:
+       - "============> Worker Join Token : {{ join_token.stdout }}"
+       - "============> Advertise IP      : {{ advertise_ip.stdout }}"
+       - "============> Join Command      : docker swarm join --token {{ join_token.stdout }} \
+       {{ advertise_ip.stdout }}:{{ docker_swarm_advertise_port }}"
+
+   - name: "(Converge) - Include swarm Worker role for Join"
+     include_role:
+      name: ansible-role-docker-swarm-slave
+     vars:
+      docker_swarm_worker_join_token: "{{ join_token.stdout }}"
+      docker_swarm_advertise_ip: "{{ advertise_ip.stdout }}"
+      docker_swarm_advertise_port: 2377

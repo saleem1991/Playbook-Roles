@@ -1,0 +1,54 @@
+---
+
+# Check swarm node initialized
+- name: "({{ os_with_version }}) SWARM-MASTER::INSTALL - Check swarm node initialized"
+  shell:
+   cmd: "docker node ls 1> /dev/null 2>&1"
+  register: swarm_status
+  ignore_errors: true
+  run_once: true
+
+# Leave previous cluster if already member
+- name: "({{ os_with_version }}) SWARM-MASTER::INSTALL - Leave previous cluster if already member"
+  shell:
+   cmd: "docker swarm leave --force  1> /dev/null 2>&1"
+  ignore_errors: true
+  run_once: true
+
+# Initialize cluster if required
+- name: "({{ os_with_version }}) SWARM-MASTER::INSTALL - Initialize cluster if required"
+  shell:
+   cmd: |
+    docker swarm init \
+    --advertise-addr {{ docker_swarm_advertise_ip }}:{{ docker_swarm_advertise_port }} \
+    {{ docker_swarm_extras_options | join(' ') }}
+  when:
+   - swarm_status.rc != 0
+   - docker_swarm_master_join_token | length == 0
+
+# Join an existing cluster (as a master role) if required
+- name: "({{ os_with_version }}) SWARM-MASTER::INSTALL - Join an existing cluster (as a master role) if required"
+  shell:
+   cmd: |
+    docker swarm join \
+    --token {{ docker_swarm_master_join_token }} \
+    {{ docker_swarm_extras_options | join(' ') }} \
+    {{ docker_swarm_advertise_ip }}:{{ docker_swarm_advertise_port }}
+  when:
+   - docker_swarm_master_join_token | length > 0
+
+# Generate portainer service stack if needed
+- name: "({{ os_with_version }}) SWARM-MASTER::INSTALL - Generate portainer service stack if needed for"
+  template:
+   dest: "{{ _docker_swarm_stacks_dir }}/portainer-stack.yml"
+   src: "portainer-agent-stack.yml.j2"
+  when:
+   - docker_swarm_portainer_enabled|bool
+
+# Deploy portainer service stack if needed
+- name: "({{ os_with_version }}) SWARM-MASTER::INSTALL - Deploy portainer service stack if needed"
+  shell:
+   cmd: |
+    docker stack deploy --compose-file={{ _docker_swarm_stacks_dir }}/portainer-stack.yml portainer
+  when:
+   - docker_swarm_portainer_enabled|bool

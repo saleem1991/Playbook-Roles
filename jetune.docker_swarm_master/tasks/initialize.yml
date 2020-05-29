@@ -1,0 +1,52 @@
+---
+
+# Define commons tasks
+- name: "({{ os_with_version }}) SWARM-MASTER::Initialize - Define Commons facts"
+  set_fact:
+   docker_swarm_portainer_stack_dest_path: "/tmp/portainer-stack.yml"
+   _docker_swarm_post_install_script: "{{ docker_swarm_post_install_script | regex_replace('^\\/', '') }}"
+   _docker_swarm_data_dir: "{{ docker_swarm_data_dir | regex_replace('^\\/', '') }}"
+   _docker_swarm_stacks_dir: "{{ docker_swarm_data_dir | regex_replace('^\\/', '') }}/stacks"
+
+- name: "({{ os_with_version }}) SWARM-MASTER::Initialize - Ensure docker swarm directories are created"
+  file:
+   path: "{{ item.path }}"
+   state: directory
+   mode: "{{ item.mode | default('u+rwx,g+x,o+x') }}"
+  when:
+   - docker_data_dir_override|bool
+  tags:
+   - molecule-idempotence-notest
+  loop:
+   - path: "{{ _docker_swarm_data_dir }}"
+   - path: "{{ _docker_swarm_stacks_dir }}"
+
+- name: "({{ os_with_version }}) SWARM-MASTER::Initialize - Ensure main environment variables are defined"
+  lineinfile:
+   dest: "/etc/environment"
+   create: true
+   regexp: "^{{ item.key }}=.*$"
+   line: "{{ item.key }}={{ item.value }}"
+   state: present
+  loop:
+   - key: "DOCKER_SWARM_DATA_DIR"
+     value: "{{ _docker_swarm_data_dir }}"
+   - key: "DOCKER_SWARM_STACKS_DIR"
+     value: "{{ _docker_swarm_stacks_dir }}"
+
+# Installation Initialized facts
+- name: "({{ os_with_version }}) SWARM-MASTER::Initialize - Installation Initialized facts [Recap]"
+  debug:
+   msg:
+    - "Docker Swarm enabled              : true"
+    - "Docker Swarm master               : true"
+    - "Docker Swarm data directory       : {{ _docker_swarm_data_dir }}"
+    - "Docker Swarm stacks directory       : {{ _docker_swarm_stacks_dir }}"
+    - "Docker Swarm advertise IP         : {{ docker_swarm_advertise_ip }}"
+    - "Docker Swarm advertise port       : {{ docker_swarm_advertise_port }}"
+    - "Docker Swarm master join token    : {{ docker_swarm_master_join_token }}"
+    - "Docker Swarm master extras option : {{ docker_swarm_extras_options }}"
+    - "Docker Swarm portainer enabled    : {{ docker_swarm_portainer_enabled }}"
+    - "Docker Swarm portainer agent port : {{ docker_swarm_portainer_agent_port }}"
+    - "Docker Swarm portainer port       : {{ docker_swarm_portainer_port }}"
+    - "Docker Swarm post install script  : {{ docker_swarm_post_install_script }}"

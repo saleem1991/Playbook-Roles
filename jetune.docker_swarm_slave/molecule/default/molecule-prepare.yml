@@ -1,0 +1,24 @@
+---
+- name: Prepare Docker swarm first master for test
+  hosts: "swarm_init"
+  vars_files:
+   - "test-vars-ce-swarm-cluster-init-{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+
+  roles:
+   - role: jetune.docker_swarm_master
+
+  tasks:
+
+   - name: "(Prepare) - Extract Worker join token"
+     shell:
+      cmd: "docker swarm join-token --quiet worker"
+     register: join_token
+
+   - name: "(Prepare) - Print Worker join token"
+     debug:
+      msg: "Worker [IP : {{ docker_swarm_advertise_ip }}, Join Token : {{ join_token.stdout }} ]"
+
+   - name: "(Prepare) - Create token file in shared volume"
+     shell:
+      cmd: "echo '{{ join_token.stdout }}' > /tmp/join_token && \
+      echo '{{ docker_swarm_advertise_ip }}' > /tmp/advertise_ip"

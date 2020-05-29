@@ -1,0 +1,67 @@
+---
+dependency:
+    name: galaxy
+    options:
+        role-file: molecule/requirements.yml
+        ignore-certs: true
+driver:
+    name: docker
+lint: |
+    yamllint .
+platforms:
+    - name: "${MOLECULE_DISTRO:-ubuntu16}-swarm-master"
+      image: "kubecloudsas/docker-ansible-test:${MOLECULE_DISTRO:-ubuntu16}"
+      command: ${MOLECULE_DOCKER_COMMAND:-""}
+      volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:ro
+          - /tmp:/tmp:rw
+      privileged: true
+      pre_build_image: true
+      networks:
+          - name: "${MOLECULE_DISTRO:-ubuntu16}_swarm"
+      hostname: "master0"
+      groups:
+          - "swarm_init"
+    - name: "${MOLECULE_DISTRO:-ubuntu16}-swarm-slave-01"
+      image: "kubecloudsas/docker-ansible-test:${MOLECULE_DISTRO:-ubuntu16}"
+      command: ${MOLECULE_DOCKER_COMMAND:-""}
+      volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:ro
+          - /tmp:/tmp:rw
+      privileged: true
+      pre_build_image: true
+      networks:
+          - name: "${MOLECULE_DISTRO:-ubuntu16}_swarm"
+      hostname: "slave1"
+      groups:
+          - "swarm_join"
+
+provisioner:
+    name: ansible
+    env:
+        ANSIBLE_ROLES_PATH: molecule/roles
+    lint:
+        name: ansible-lint
+        options:
+            force-color: true
+    playbooks:
+        prepare: ${MOLECULE_PREPARE:-molecule-prepare.yml}
+        converge: ${MOLECULE_CONVERGE:-molecule-converge.yml}
+scenario:
+    name: default
+    test_sequence:
+        - lint
+        - dependency
+        - syntax
+        - destroy
+        - create
+        - prepare
+        - converge
+        - side_effect
+        - verify
+        - cleanup
+        - destroy
+verifier:
+    name: testinfra
+    lint:
+        name: flake8

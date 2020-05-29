@@ -1,0 +1,42 @@
+---
+- name: NFS Clients
+  hosts: nfs-clients
+  remote_user: ansible
+  become: yes
+  tasks:
+    - name: Install nfs-utils
+      yum:
+        name: nfs-utils*
+        state: present
+    - name: Start and Enable nfs
+      service:
+        name: nfs
+        state: started
+        enabled: yes
+
+    - name: Ensure rpcbind is started and enabled. For Centos6!
+      service:
+        name: rpcbind
+        state: started
+        enabled: true
+
+    - name: showmount
+      shell: showmount -e 192.168.35.17
+   
+    - name: mkdir /share
+      file:
+        path: /share
+        state: directory
+        mode: '755'
+        owner: root
+        group: root
+
+    - name: mounting
+      mount:
+        src: 192.168.35.17:/share
+        path: /share
+        opts: defaults
+        state: mounted    
+        fstype: nfs
+        dump: '0'
+        passno: '0'

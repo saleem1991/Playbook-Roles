@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  author: jetune
+  role_name: docker_swarm_slave
+  description: Docker Swarm Slave installation ansible role
+  company: "Kube Cloud"
+  issue_tracker_url: https://github.com/kube-cloud/ansible-role-docker-swarm-slave.git
+  license: "license (Apache 2.0)"
+  min_ansible_version: 2.8
+  github_branch: master
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+  galaxy_tags:
+    - deployment
+    - container
+    - virtualisation
+    - system
+    - linux
+    - build
+    - docker
+    - swarm
+    - cluster
+    - orchestration
+    - master
+
+dependencies:
+  - role: jetune.docker

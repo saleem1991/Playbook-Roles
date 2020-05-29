@@ -1,0 +1,22 @@
+---
+
+# Install Docker main tasks on Supported system
+- name: "({{ os_with_version }}) SWARM-WORKER::Main - Install Docker Swarm main tasks on Supported system"
+  block:
+
+   # Include Initialize tasks (Linux)
+   - name: "({{ os_with_version }}) SWARM-WORKER::Main - Include Initialize tasks"
+     include_tasks: "initialize.yml"
+
+   # Include Install Swarm tasks (Linux)
+   - name: "({{ os_with_version }}) SWARM-WORKER::Main - Include Install Swarm tasks for ({{ ansible_distribution }})"
+     include_tasks: "install-swarm.yml"
+
+   # Include Docker Swarm Post Install tasks (Linux)
+   - name: "({{ os_with_version }}) SWARM-WORKER::Main - Include Swarm Post Install tasks for ({{ ansible_distribution }})"
+     include_tasks: "post-install.yml"
+     when:
+      - docker_swarm_post_install_script | length > 0
+
+  when:
+   - ansible_os_family == "RedHat" or ansible_os_family == "Debian"

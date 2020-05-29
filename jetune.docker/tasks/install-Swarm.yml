@@ -1,0 +1,63 @@
+---
+
+- name: "({{ os_with_version }}) Check swarm node initialized"
+  shell:
+   cmd: "docker node ls"
+  register: swarm_status
+  ignore_errors: true
+  run_once: true
+
+- name: "({{ os_with_version }}) Initialize cluster if required"
+  shell:
+   cmd: |
+    docker swarm init \
+    --advertise-addr {{ docker_swarm_advertise_ip }}:{{ docker_swarm_advertise_port }} \
+    {{ docker_swarm_extras_options | join(' ') }}
+  when:
+   - swarm_status.rc != 0
+   - docker_swarm_master|bool
+   - docker_swarm_master_join_token | length == 0
+
+- name: "({{ os_with_version }}) Join an existing cluster (as a master role) if required"
+  shell:
+   cmd: |
+    docker swarm join \
+    --token {{ docker_swarm_master_join_token }} \
+    {{ docker_swarm_extras_options | join(' ') }} \
+    {{ docker_swarm_advertise_ip }}:{{ docker_swarm_advertise_port }}
+  when:
+   - docker_swarm_master|bool
+   - docker_swarm_master_join_token | length > 0
+
+- name: "({{ os_with_version }}) Join an existing cluster (as a worker role) if required"
+  shell:
+   cmd: |
+    docker swarm join \
+    --token {{ docker_swarm_worker_join_token }} \
+    {{ docker_swarm_extras_options | join(' ') }} \
+    {{ docker_swarm_advertise_ip }}:{{ docker_swarm_advertise_port }}
+  when:
+   - not docker_swarm_master|bool
+   - docker_swarm_worker_join_token | length > 0
+
+- name: "({{ os_with_version }}) Ensure portainer service stack base dir exists for the initializer master"
+  file:
+   path: "{{ docker_swarm_portainer_stack_dest_path | dirname }}"
+   state: directory
+  when:
+   - docker_swarm_portainer_enabled|bool
+
+# Generate portainer service stack if needed
+- name: "({{ os_with_version }}) Generate portainer service stack if needed for the initializer master"
+  template:
+   dest: "{{ docker_swarm_portainer_stack_dest_path }}"
+   src: "portainer-agent-stack.yml.j2"
+  when:
+   - docker_swarm_portainer_enabled|bool
+
+- name: "({{ os_with_version }}) Deploy portainer service stack if needed for the initializer master"
+  shell:
+   cmd: |
+    docker stack deploy --compose-file={{ docker_swarm_portainer_stack_dest_path }} portainer
+  when:
+   - docker_swarm_portainer_enabled|bool

@@ -1,6 +1,9 @@
 ---
-- name: use geerlingguy role
+- name: Provision samba role and add two shares 
   hosts: samba
   become: true
+  user: ansible
+ 
+      
   roles:
-    - geerlingguy.samba
+      - bertvv.samba

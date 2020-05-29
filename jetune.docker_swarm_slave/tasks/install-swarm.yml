@@ -1,0 +1,37 @@
+---
+
+# Check swarm node initialized
+- name: "({{ os_with_version }}) SWARM-WORKER::INSTALL - Check swarm node initialized"
+  shell:
+   cmd: "docker node ls 1> /dev/null 2>&1"
+  register: swarm_status
+  ignore_errors: true
+  run_once: true
+
+# Leave previous cluster if already member
+- name: "({{ os_with_version }}) SWARM-WORKER::INSTALL - Leave previous cluster if already member"
+  shell:
+   cmd: "docker swarm leave --force  1> /dev/null 2>&1"
+  ignore_errors: true
+  run_once: true
+
+# Wait for swarm master available
+- name: "({{ os_with_version }}) SWARM-WORKER::INSTALL - Wait for swarm master available"
+  wait_for:
+   host: "{{ docker_swarm_advertise_ip }}"
+   port: "{{ docker_swarm_advertise_port }}"
+   delay: 5
+   sleep: 3
+   timeout: 300
+   msg: "The swarm master is not receable [Advertise : {{ docker_swarm_advertise_ip }}:{{ docker_swarm_advertise_port }} ]"
+
+# Join an existing cluster (as a master role) if required
+- name: "({{ os_with_version }}) SWARM-WORKER::INSTALL - Join an existing cluster (as a worker role)"
+  shell:
+   cmd: |
+    docker swarm join \
+    --token {{ docker_swarm_worker_join_token }} \
+    {{ docker_swarm_extras_options | join(' ') }} \
+    {{ docker_swarm_advertise_ip }}:{{ docker_swarm_advertise_port }}
+  when:
+   - docker_swarm_worker_join_token | length > 0

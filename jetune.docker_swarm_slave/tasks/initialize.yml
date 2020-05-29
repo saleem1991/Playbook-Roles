@@ -1,0 +1,55 @@
+---
+
+# Define commons tasks
+- name: "({{ os_with_version }}) SWARM-WORKER::Initialize - Define Commons facts"
+  set_fact:
+   docker_swarm_portainer_stack_dest_path: "/tmp/portainer-stack.yml"
+   _docker_swarm_post_install_script: "{{ docker_swarm_post_install_script | regex_replace('^\\/', '') }}"
+   _docker_swarm_data_dir: "{{ docker_swarm_data_dir | regex_replace('^\\/', '') }}"
+   _docker_swarm_stacks_dir: "{{ docker_swarm_data_dir | regex_replace('^\\/', '') }}/stacks"
+
+# Check Join Token Requirement
+- name: "({{ os_with_version }}) SWARM-MASTER::Initialize - Check Join Token Requirement"
+  fail:
+   msg: "Swarm worker node need join token"
+  when:
+   - docker_swarm_worker_join_token | length == 0
+
+- name: "({{ os_with_version }}) SWARM-WORKER::Initialize - Ensure docker swarm directories are created"
+  file:
+   path: "{{ item.path }}"
+   state: directory
+   mode: "{{ item.mode | default('u+rwx,g+x,o+x') }}"
+  when:
+   - docker_data_dir_override|bool
+  tags:
+   - molecule-idempotence-notest
+  loop:
+   - path: "{{ _docker_swarm_data_dir }}"
+   - path: "{{ _docker_swarm_stacks_dir }}"
+
+- name: "({{ os_with_version }}) SWARM-WORKER::Initialize - Ensure main environment variables are defined"
+  lineinfile:
+   dest: "/etc/environment"
+   create: true
+   regexp: "^{{ item.key }}=.*$"
+   line: "{{ item.key }}={{ item.value }}"
+   state: present
+  loop:
+   - key: "DOCKER_SWARM_DATA_DIR"
+     value: "{{ _docker_swarm_data_dir }}"
+   - key: "DOCKER_SWARM_STACKS_DIR"
+     value: "{{ _docker_swarm_stacks_dir }}"
+
+# Installation Initialized facts
+- name: "({{ os_with_version }}) SWARM-WORKER::Initialize - Installation Initialized facts [Recap]"
+  debug:
+   msg:
+    - "Docker Swarm enabled              : true"
+    - "Docker Swarm master               : false"
+    - "Docker Swarm data directory       : {{ _docker_swarm_data_dir }}"
+    - "Docker Swarm advertise IP         : {{ docker_swarm_advertise_ip }}"
+    - "Docker Swarm advertise port       : {{ docker_swarm_advertise_port }}"
+    - "Docker Swarm worker join token    : {{ docker_swarm_worker_join_token }}"
+    - "Docker Swarm worker extras option : {{ docker_swarm_extras_options }}"
+    - "Docker Swarm post install script  : {{ docker_swarm_post_install_script }}"

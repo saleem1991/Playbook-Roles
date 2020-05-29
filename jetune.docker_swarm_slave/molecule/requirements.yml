@@ -1,0 +1,6 @@
+---
+- src: jetune.docker
+  version: master
+
+- src: jetune.docker_swarm_master
+  version: master

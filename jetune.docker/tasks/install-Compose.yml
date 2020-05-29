@@ -1,0 +1,21 @@
+---
+
+- name: ({{ os_with_version }}) Role Installs Compose for Community Edition
+  block:
+
+   - name: ({{ os_with_version }}) Download and Install Compose script file
+     get_url:
+      url: "{{ docker_compose_url }}"
+      dest: "/usr/local/bin/docker-compose"
+      checksum: "{{ docker_compose_checksum }}"
+      mode: u=rwx,g=rx,o=rx
+
+   - name: ({{ os_with_version }}) Create Symlink on Compose Script
+     file:
+      src: "/usr/local/bin/docker-compose"
+      dest: "/usr/bin/docker-compose"
+      state: link
+
+  when:
+   - community_edition|bool
+   - docker_install_compose|bool

@@ -1,0 +1,42 @@
+---
+# Install Docker main tasks on Supported system
+- name: Install Docker main tasks on Supported system
+  block:
+
+   # Include Initialize tasks (Linux)
+   - name: Include Initialize tasks
+     include_tasks: "initialize.yml"
+
+   # Include Install tasks (Linux)
+   - name: Include Install tasks for ({{ ansible_distribution }})
+     include_tasks: "install-{{ ansible_distribution }}.yml"
+
+   # Flush Handlers
+   - name: Force all notified handlers to run
+     meta: flush_handlers
+
+   # Include Install Compose tasks (Linux)
+   - name: Include Install Compose tasks for ({{ ansible_distribution }})
+     include_tasks: "install-Compose.yml"
+
+   # Include Docker Engine Post Install tasks (Linux)
+   - name: Include Post Install tasks for ({{ ansible_distribution }})
+     include_tasks: "docker-Engine-Post-Install.yml"
+     when:
+      - docker_post_install_script | length > 0
+
+   # Include Install Swarm tasks (Linux)
+   - name: Include Install Swarm tasks for ({{ ansible_distribution }})
+     include_tasks: "install-Swarm.yml"
+     when:
+      - docker_swarm_enabled | bool
+
+   # Include Docker Swarm Post Install tasks (Linux)
+   - name: Include Swarm Post Install tasks for ({{ ansible_distribution }})
+     include_tasks: "docker-Swarm-Post-Install.yml"
+     when:
+      - docker_swarm_post_install_script | length > 0
+      - docker_swarm_enabled | bool
+
+  when:
+   - ansible_os_family == "RedHat" or ansible_os_family == "Debian"
